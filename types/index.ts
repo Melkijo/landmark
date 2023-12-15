@@ -4,5 +4,6 @@ export interface LandCertificate{
     owner: string;
     location: string;
     created_at: string;
-   
+   thumbnail: string;
+   owner_id:string;
 }

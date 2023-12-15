@@ -1,38 +1,64 @@
-import { CardSkeleton } from "@/components/card";
-import Navbar from "@/components/navbar";
+"use client";
+import { Card, CardStored } from "@/components/card";
+import Sidebar from "@/components/sidebar";
+import { supabase } from "@/lib";
+import { LandCertificate } from "@/types";
+import { cookies } from "next/headers";
+import { useEffect, useState } from "react";
 
 export default function Page() {
+  const [walletAddress, setWalletAddress] = useState("");
+  const [certificate, setCertificate] = useState<LandCertificate[]>([]);
+
+  const requestAccount = async () => {
+    if (window.ethereum) {
+      console.log("detected");
+
+      try {
+        const accounts = await window.ethereum.request({
+          method: "eth_requestAccounts",
+        });
+        setWalletAddress(accounts[0]);
+      } catch (error) {
+        console.log("Error connecting...");
+      }
+    } else {
+      alert("Meta Mask not detected");
+    }
+  };
+
+  useEffect(() => {
+    requestAccount();
+    getCertificate();
+  }, []);
+
+  async function getCertificate() {
+    const res = await fetch("/api/land-certificate", {
+      cache: "no-cache",
+    });
+    const data = await res.json();
+    setCertificate(data.data);
+  }
+  //fetch user session data
+  const handleCheckSession = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    console.log(user);
+  };
   return (
-    <>
-      <Navbar />
-      <div className="drawer lg:drawer-open">
-        <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
-        <div className="drawer-content flex flex-col items-center justify-center">
-          {/* Page content here */}
-          <label
-            htmlFor="my-drawer-2"
-            className="btn btn-primary drawer-button lg:hidden"
-          >
-            Open drawer
-          </label>
-        </div>
-        <div className="drawer-side">
-          <label
-            htmlFor="my-drawer-2"
-            aria-label="close sidebar"
-            className="drawer-overlay"
-          ></label>
-          <ul className="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
-            {/* Sidebar content here */}
-            <li>
-              <a>Sidebar Item 1</a>
-            </li>
-            <li>
-              <a>Sidebar Item 2</a>
-            </li>
-          </ul>
+    <Sidebar>
+      <div className="mx-[3%]">
+        <h1 className="text-2xl font-bold pt-5">Your Land Certificates</h1>
+        <div className="flex  gap-10 mt-10 flex-wrap ">
+          {certificate.map((certificate) =>
+            certificate.owner_id === walletAddress ? (
+              <CardStored {...certificate} />
+            ) : null
+          )}
         </div>
       </div>
-    </>
+    </Sidebar>
   );
 }

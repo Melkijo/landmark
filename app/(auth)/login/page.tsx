@@ -10,33 +10,53 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const supabase = createClientComponentClient();
+  const [walletAddress, setWalletAddress] = useState("");
+
+  const requestAccount = async () => {
+    if (window.ethereum) {
+      console.log("detected");
+
+      try {
+        const accounts = await window.ethereum.request({
+          method: "eth_requestAccounts",
+        });
+        setWalletAddress(accounts[0]);
+      } catch (error) {
+        console.log("Error connecting...");
+      }
+    } else {
+      alert("Meta Mask not detected");
+    }
+  };
+
   const handleSignIn = async () => {
     setLoading(true);
-    const { data } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
+    router.push("/admin/dashboard");
+    // const { data } = await supabase.auth.signInWithPassword({
+    //   email: email,
+    //   password: password,
+    // });
 
-    if (data.session !== null) {
-      router.push("/admin/dashboard");
-      setLoading(false);
-    } else {
-      alert("Email atau password salah");
-      setLoading(false);
-    }
+    // if (data.session !== null) {
+    //   router.push("/admin/dashboard");
+    //   setLoading(false);
+    // } else {
+    //   alert("Email atau password salah");
+    //   setLoading(false);
+    // }
   };
 
   return (
     <>
       <Link href="/">
-        <p className="underline-offset-4">Back</p>
+        <button className="p-5 underline underline-offset-2">Back</button>
       </Link>
       <div className="flex justify-center flex-col items-center gap-5  h-[100vh]">
         <h1 className="text-[25px] font-bold md:text-[40px] leading-none  ">
-          Login
+          LOGIN
         </h1>
 
-        <form action="">
+        {/* <form action="">
           <div className="flex flex-col w-72 gap-5">
             <input
               type="email"
@@ -65,7 +85,28 @@ export default function Login() {
               )}
             </button>
           </div>
-        </form>
+        </form> */}
+        <button
+          className="btn btn-accent"
+          onClick={requestAccount}
+          disabled={walletAddress == "" ? false : true}
+        >
+          Connect Wallet
+        </button>
+        <div>Wallet Address {walletAddress}</div>
+        {walletAddress && (
+          <button
+            onClick={handleSignIn}
+            className="btn btn-accent"
+            disabled={loading}
+          >
+            {loading ? (
+              <span className="loading loading-spinner loading-xs"></span>
+            ) : (
+              "Go to dashboard"
+            )}
+          </button>
+        )}
       </div>
     </>
   );

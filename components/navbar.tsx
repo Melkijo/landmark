@@ -1,5 +1,7 @@
+"use client";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Link from "next/link";
-
+import { useRouter } from "next/navigation";
 export default function Navbar() {
   return (
     <div className="navbar bg-base-300 px-10">
@@ -11,9 +13,6 @@ export default function Navbar() {
       <div className="flex gap-5">
         <Link href="/login">
           <button className="btn btn-ghost">Login</button>
-        </Link>
-        <Link href="/register">
-          <button className="btn btn-ghost">Register</button>
         </Link>
       </div>
     </div>
