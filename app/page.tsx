@@ -20,6 +20,14 @@ export default function Home() {
     return (
       <>
         <Navbar />
+        <div className="w-full py-10 bg-gradient-to-r from-cyan-200 to-cyan-400">
+          <h1 className="text-4xl text-center font-bold text-black">
+            Landmark
+          </h1>
+          <p className="text-center text-xl mt-5 text-black">
+            A decentralized land registry system prototype
+          </p>
+        </div>
         <div className="mx-[3%]">
           <div className="flex  gap-10 mt-10">
             <CardSkeleton />
@@ -39,8 +47,8 @@ export default function Home() {
           A decentralized land registry system prototype
         </p>
       </div>
-      <div className="mx-[3%]">
-        <div className="flex  gap-10 mt-10 flex-wrap ">
+      <div className="mx-[3%] my-10">
+        <div className="grid grid-cols-4 gap-4 ">
           {certificate.map((certificate) => (
             <Card {...certificate} />
           ))}
